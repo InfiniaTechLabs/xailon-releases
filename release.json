@@ -1,0 +1,9 @@
+{
+  "version": "v0.2.13",
+  "channel": "preview",
+  "status": "building",
+  "source_commit": "6fa980b70d62c849b082255e5e02f2baaa9409c3",
+  "repository": "InfiniaTechLabs/xailon-releases",
+  "release_url": "https://github.com/InfiniaTechLabs/xailon-releases/releases/tag/v0.2.13",
+  "assets": []
+}

@@ -1,0 +1,33 @@
+Xailon
+Copyright 2026 NET Group
+
+Xailon is a fork of Goose (https://github.com/block/goose), an open-source
+project originally created by Block, Inc. and stewarded by AAIF (Agentic AI
+Foundation). Goose is licensed under the Apache License, Version 2.0, as is this
+fork. See LICENSE for the full text.
+
+This product includes code adapted from aionrs
+(https://github.com/iOfficeAI/aionrs), licensed under the Apache License,
+Version 2.0, at commit f7111746015d8e6f960e1568a805ceef975022d3.
+Adapted file-state tracking, line-ending matching, and atomic file replacement
+originate in aion-tools/src/file_cache.rs, edit.rs, and write.rs.
+Tool-loop trackers originate in aion-agent/src/tool_call.rs. Terminal tool-step
+grouping and display handling originate in aion-tui/src/ui.rs and terminal.rs.
+Provider compatibility settings originate in aion-config/src/compat.rs, and
+tool-call sanitizing in aion-providers/src/tool_call_sanitize.rs and
+anthropic_shared.rs. Windows job-object containment of shell process trees
+originates in aion-process/src/containment.rs and windows_job.rs.
+Per-project memory paths, index capping, entry storage and memory prompt
+guidance originate in aion-memory/src/paths.rs, index.rs, store.rs, types.rs
+and prompt.rs. Prompt-cache break diagnostics originate in
+aion-agent/src/cache_diagnostics.rs. Deferred tool schemas and tool search
+originate in aion-tools/src/tool_search.rs, aion-types/src/tool.rs,
+aion-providers/src/projector.rs and aion-agent/src/orchestration.rs. Tool-output sanitizing, repeated-line
+folding, JSON compaction and TOON tables originate in aion-compact/src/api.rs,
+sanitize.rs, fold.rs, json.rs and toon.rs.
+Stream resending, the server-error retry ladder, stream diagnostics, in-body
+error detection, the tool-format mismatch hint, and Bedrock schema sanitizing
+and error hints originate in aion-providers/src/stream_runner.rs, retry.rs,
+stream_diagnostics.rs, error.rs, projector.rs and bedrock.rs, and in
+aion-config/src/compat.rs.
+Modifications are made for Xailon; see derived-from headers in the source files.
