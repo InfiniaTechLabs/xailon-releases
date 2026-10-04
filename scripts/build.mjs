@@ -41,7 +41,11 @@ markdown = markdown.replace(/- \[Installation\][\s\S]*?- \[Troubleshooting\][^\n
 let content = marked(markdown).replaceAll('href="install.sh"', 'href="/install.sh"').replaceAll('href="install.ps1"', 'href="/install.ps1"');
 const chunks = content.split(/(?=<h2 )/);
 content = chunks.map((chunk, index) => index ? `<section class="guide-section">${chunk}</section>` : chunk).join('');
-const home = await readFile(path.join(root, 'site/index.html'), 'utf8');
+let home = await readFile(path.join(root, 'site/index.html'), 'utf8');
+if (release.status !== 'published') {
+  home = home.replace('Public preview · Check the release notes for platform availability and signing status.', 'Preview packages are being built. Install commands will work after the release is published.');
+}
+await writeFile(path.join(out, 'index.html'), home);
 const header = home.match(/<header class="site-header[\s\S]*?<\/header>/)[0].replace('href="#workflow"', 'href="/#workflow"').replace('href="#install"', 'href="/#install"');
 const footer = home.match(/<footer class="site-footer[\s\S]*?<\/footer>/)[0];
 await writeFile(path.join(out, 'guide/index.html'), `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>User guide — Xailon</title><meta name="description" content="Install and update Xailon on macOS, Windows, and Linux. Learn the CLI, TUI, desktop app, provider setup, and approvals."><link rel="canonical" href="https://xailoncode.infinialabs.ai/guide/"><link rel="icon" href="/saqr.svg" type="image/svg+xml"><link rel="stylesheet" href="/styles.css"><script type="module" src="/app.js"></script></head><body><a class="skip" href="#main">Skip to content</a>${header}<main class="wrap guide-layout" id="main"><aside class="guide-nav"><label for="guide-search">Find in the guide</label><input id="guide-search" type="search" placeholder="Try “provider” or “update”" autocomplete="off"><p class="guide-search-status" id="guide-search-status" role="status"></p><nav aria-label="User guide sections"><ul>${headings.map(({text,id})=>`<li><a href="#${id}">${text}</a></li>`).join('')}</ul></nav><a class="download-guide" href="/USER_GUIDE.md" download>Download the guide (.md) ↗</a></aside><article class="guide-article">${content}</article></main>${footer}</body></html>`);
