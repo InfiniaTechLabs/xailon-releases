@@ -63,7 +63,7 @@ $logDirectory = Join-Path $env:LOCALAPPDATA 'Xailon\InstallerLogs'
 New-Item -ItemType Directory -Path $logDirectory -Force | Out-Null
 try {
     $packages = @()
-    if ($Component -in @('cli', 'all')) { $packages += Get-VerifiedAsset 'xailon-x86_64-pc-windows-msvc.msi' $temp $base }
+    $packages += Get-VerifiedAsset 'xailon-x86_64-pc-windows-msvc.msi' $temp $base
     if ($Component -in @('desktop', 'all')) { $packages += Get-VerifiedAsset 'xailon-desktop-x86_64-pc-windows-msvc.msi' $temp $base }
     Install-VisualCppRuntime $temp
     foreach ($package in $packages) {

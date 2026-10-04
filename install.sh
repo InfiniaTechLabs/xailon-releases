@@ -72,13 +72,12 @@ main() {
       as_root apt-get install -y "$tmp/xailon-$target.deb"
     fi
   else
-    if [ "$component" != desktop ] || [ "$os" = Linux ]; then
-      if [ "$mode" = rpm ]; then
-        download "xailon-$target.rpm"
-        as_root dnf install -y "$tmp/xailon-$target.rpm"
-      else
-        install_cli
-      fi
+    # The CLI supplies provider configuration for desktop installs as well.
+    if [ "$mode" = rpm ]; then
+      download "xailon-$target.rpm"
+      as_root dnf install -y "$tmp/xailon-$target.rpm"
+    else
+      install_cli
     fi
     if [ "$component" != cli ]; then
       if [ "$os" = Darwin ]; then install_macos_desktop

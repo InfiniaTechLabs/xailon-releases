@@ -44,8 +44,8 @@ curl -fsSL https://xailoncode.infinialabs.ai/install.sh | sh -s -- --component a
 curl -fsSL https://xailoncode.infinialabs.ai/install.sh | sh -s -- update --component all
 ```
 
-Use `--component desktop` for just the GUI (Linux packages also install its
-required CLI helper). Linux ARM64 currently supports only `--component cli`.
+Use `--component desktop` to install the GUI with the CLI setup tools needed
+for provider configuration. `--component all` has the same complete installation. Linux ARM64 currently supports only `--component cli`.
 Use `--version v0.2.13` to pin a version and `--dry-run` to see the plan without
 changing your machine. Portable CLI installations default to `~/.local/bin`;
 `--prefix /absolute/path` chooses another prefix. Native Linux package
