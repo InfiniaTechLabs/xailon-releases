@@ -120,6 +120,10 @@ install_cli() {
   release="$state/$version-$(printf %s "$actual" | cut -c1-12)"
   bins='xailon xailond'
   [ "$os" != Linux ] || bins="$bins xailon-linux-sandbox"
+  for bin in $bins; do
+    [ ! -d "$prefix/bin/$bin" ] || fail "Cannot replace a directory: $prefix/bin/$bin"
+  done
+  [ ! -d "$state/current" ] || [ -L "$state/current" ] || fail "Expected a release symlink: $state/current"
   mkdir -p "$tmp/unpacked" "$state" "$prefix/bin"
   # Only fixed, top-level filenames are extracted from the verified archive.
   tar -xjf "$tmp/xailon-$target.tar.bz2" -C "$tmp/unpacked" $bins LICENSE NOTICE
@@ -169,6 +173,7 @@ app_run() {
   if [ -d "$app_parent" ] && [ ! -w "$app_parent" ]; then as_root "$@"; else "$@"; fi
 }
 install_linux_desktop() {
+  [ ! -d "$prefix/bin/xailon-desktop" ] || fail "Cannot replace a directory: $prefix/bin/xailon-desktop"
   download "xailon-desktop-$target.AppImage"
   chmod 755 "$tmp/xailon-desktop-$target.AppImage"
   (cd "$tmp" && "./xailon-desktop-$target.AppImage" --appimage-extract > /dev/null)
