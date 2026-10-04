@@ -1,4 +1,4 @@
-# Xailon releases
+# XailonCode releases
 
 ```text
  ▄███▄    Xailon

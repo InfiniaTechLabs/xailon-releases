@@ -1,6 +1,6 @@
 # XailonCode user guide
 
-For Xailon **0.2.13** · CLI, terminal UI, and desktop app
+For XailonCode **0.2.13** · CLI, terminal UI, and desktop app
 
 - [Installation](#installation)
 - [Connect a model](#connect-a-model)
@@ -12,14 +12,14 @@ For Xailon **0.2.13** · CLI, terminal UI, and desktop app
 - [Updates and removal](#updates-and-removal)
 - [Troubleshooting](#troubleshooting)
 
-Xailon runs its agent and stores sessions on your computer. Prompts and relevant
+XailonCode runs its agent and stores sessions on your computer. Prompts and relevant
 project content are sent to the model endpoint you configure. Using a remote
 provider can incur that provider's charges; a locally hosted endpoint keeps model
-requests local. You do not need a Xailon account.
+requests local. You do not need a XailonCode account.
 
 ## Installation
 
-Download from [Xailon Releases](https://github.com/InfiniaTechLabs/xailon-releases/releases).
+Download from [XailonCode Releases](https://github.com/InfiniaTechLabs/xailon-releases/releases).
 Choose the operating system and processor shown in the release asset name.
 `aarch64` means ARM64 / Apple Silicon; `x86_64` means Intel/AMD 64-bit.
 
@@ -71,7 +71,7 @@ handles WebView2. Native package installation can ask for administrator approval
 Linux uses apt/dnf where available; portable AppImage installation extracts the
 app so FUSE is not required. The scripts do not install Rust or Node.js.
 
-Close Xailon before an update and reopen it afterward. Configuration and saved
+Close XailonCode before an update and reopen it afterward. Configuration and saved
 sessions are retained. Use the same component selection when updating as when
 installing. On macOS, the installer updates an existing desktop app in your user
 Applications folder or `/Applications`; a new install uses `~/Applications`.
@@ -179,7 +179,7 @@ xailon info --check
 
 Choose your provider and a model that your account or server actually supports.
 Saved settings are shared with the desktop app. API keys use the operating
-system keyring by default. Xailon does not automatically load `.env` files.
+system keyring by default. XailonCode does not automatically load `.env` files.
 
 For a shell-only OpenAI-compatible setup:
 
@@ -302,7 +302,7 @@ automation and inspect its result. The application must be running for its
 in-process scheduler to execute tasks.
 
 **Open a document folder…** creates a Cowork project for reports and documents.
-Its container-based tools may require Docker or Podman; installing Xailon alone
+Its container-based tools may require Docker or Podman; installing XailonCode alone
 does not install a container runtime.
 
 ## Approvals and workspace access
@@ -349,7 +349,7 @@ or promised by this release repository.
 
 To uninstall the desktop on macOS, move the app from Applications to Trash. For a
 CLI `.pkg` install, run `sudo /usr/local/xailon/uninstall.sh`. For a manual archive
-install, remove only the Xailon executables you installed. Use your package manager
+install, remove only the XailonCode executables you installed. Use your package manager
 on Linux, or Installed Apps on Windows, for native package installations.
 Configuration, credentials, and sessions are separate from the application files;
 remove them only if you intentionally want to discard that data.
@@ -369,5 +369,5 @@ remove them only if you intentionally want to discard that data.
 | Download hash does not match | Do not install it; download the asset and checksum again from the same release |
 
 For support, [open an issue](https://github.com/InfiniaTechLabs/xailon-releases/issues)
-with the Xailon version, OS/architecture, steps to reproduce, and a sanitized error.
+with the XailonCode version, OS/architecture, steps to reproduce, and a sanitized error.
 Do not include API keys, confidential prompts, or private project files.
