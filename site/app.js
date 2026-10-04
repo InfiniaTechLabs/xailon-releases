@@ -46,7 +46,7 @@ function initialize() {
       try { await navigator.clipboard.writeText(command.textContent); status.textContent = 'Command copied. Paste it into your terminal.'; }
       catch { status.textContent = 'Select the command above and copy it manually.'; }
     });
-    document.querySelectorAll('[data-desktop-link]').forEach(link => link.addEventListener('click', () => { component.value = 'desktop'; update(); }));
+    document.querySelectorAll('[data-desktop-link]').forEach(link => link.addEventListener('click', () => { component.value = 'all'; update(); }));
     update();
   }
   const search = document.querySelector('#guide-search');
