@@ -66,9 +66,11 @@ main() {
     if [ "$component" != cli ]; then
       download "xailon-desktop-$target.deb"
       chmod 755 "$tmp"
+      as_root apt-get update
       as_root apt-get install -y "$tmp/xailon-$target.deb" "$tmp/xailon-desktop-$target.deb"
     else
       chmod 755 "$tmp"
+      as_root apt-get update
       as_root apt-get install -y "$tmp/xailon-$target.deb"
     fi
   else

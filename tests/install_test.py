@@ -75,6 +75,31 @@ sys.stdout.buffer.write(source.read_bytes())
         result=self.run_script('--version','v0.2.13')
         self.assertNotEqual(result.returncode,0); self.assertIn('regular xailon',result.stderr)
         self.assertFalse((self.prefix/'bin/xailon').exists())
+    def test_linux_native_install_refreshes_dependencies_after_verification(self):
+        self.platform('Linux','x86_64')
+        self.write_tool('getconf','#!/bin/sh\necho "glibc 2.35"\n')
+        self.write_tool('dpkg','#!/bin/sh\nexit 0\n')
+        self.write_tool('id','#!/bin/sh\necho 0\n')
+        log=self.root/'apt.log'
+        self.write_tool('apt-get',f'#!/bin/sh\nprintf "%s\\n" "$*" >> "{log}"\n')
+        folder=self.downloads/'v0.2.13'; folder.mkdir()
+        for component in ('xailon','xailon-desktop'):
+            name=f'{component}-x86_64-unknown-linux-gnu.deb'
+            payload=b'package fixture'
+            (folder/name).write_bytes(payload)
+            (folder/(name+'.sha256')).write_text(hashlib.sha256(payload).hexdigest()+'  '+name+'\n')
+        result=self.run_script('--version','v0.2.13','--component','all')
+        self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+        commands=log.read_text().splitlines()
+        self.assertEqual(commands[0],'update')
+        self.assertEqual(len(commands),2)
+        self.assertIn('install -y ',commands[1])
+        self.assertIn('xailon-desktop-x86_64-unknown-linux-gnu.deb',commands[1])
+        log.unlink()
+        (folder/'xailon-desktop-x86_64-unknown-linux-gnu.deb.sha256').write_text('0'*64+'\n')
+        result=self.run_script('--version','v0.2.13','--component','all')
+        self.assertNotEqual(result.returncode,0)
+        self.assertFalse(log.exists(),'Package manager must not run before all downloads verify')
     def test_existing_directory_is_preserved(self):
         self.archive('v0.2.13')
         existing=self.prefix/'bin/xailon'; existing.mkdir(parents=True)
