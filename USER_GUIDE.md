@@ -1,4 +1,4 @@
-# Xailon user guide
+# XailonCode user guide
 
 For Xailon **0.2.13** · CLI, terminal UI, and desktop app
 
