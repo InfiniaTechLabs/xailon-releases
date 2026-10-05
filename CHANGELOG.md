@@ -1,5 +1,16 @@
 # XailonCode releases
 
+## v0.2.17 — Call it by name
+
+- **Skills, recipes, and plugins by name:** `/name` runs any skill, recipe, or command, and `@name` anywhere in a message calls it with the rest of the message as input. Installed plugins' recipes and commands are now callable, including the 100 recipe plugins in the Infinia Marketplace.
+- **Suggestions as you type:** the terminal UI and the desktop app suggest skills, recipes, and commands after `/` and `@`, labeled by kind; the line-based CLI completes them with Tab.
+- **Answer clarifying questions properly:** questions XailonCode asks before starting appear as a form in the terminal UI, a card in the desktop app, and pickers in the CLI, instead of raw JSON.
+- **Website:** the logo, colors, and type now match the Infinia Labs marketplace.
+
+### Packages and limits
+
+Apple Silicon macOS CLI/TUI/server archive and desktop DMG. Builds are ad-hoc signed, not Apple-notarized. Other platforms remain pending and are not advertised as downloadable. Use the public install/update scripts; the CLI's built-in `xailon update` still targets the source repository.
+
 ## v0.2.16 — Infinia Marketplace
 
 - **Infinia Marketplace everywhere:** add the curated catalog in one step with `xailon plugin marketplace add` (or `add infinia`), the new TUI `/plugins` command, or **Add Infinia Marketplace** in the desktop app.

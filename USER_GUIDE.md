@@ -1,6 +1,6 @@
 # XailonCode user guide
 
-For XailonCode **0.2.16** · CLI, terminal UI, and desktop app
+For XailonCode **0.2.17** · CLI, terminal UI, and desktop app
 
 - [Installation](#installation)
 - [Connect a model](#connect-a-model)
@@ -10,6 +10,8 @@ For XailonCode **0.2.16** · CLI, terminal UI, and desktop app
 - [Rich responses and display controls](#rich-responses-and-display-controls)
 - [MCP servers and shared Mods](#mcp-servers-and-shared-mods)
 - [Infinia Marketplace](#infinia-marketplace)
+- [Call skills, recipes, and plugins](#call-skills-recipes-and-plugins)
+- [Answer clarifying questions](#answer-clarifying-questions)
 - [Verification evidence](#verification-evidence)
 - [Project privacy and spending](#project-privacy-and-spending)
 - [Approvals and workspace access](#approvals-and-workspace-access)
@@ -24,7 +26,7 @@ requests local. You do not need a XailonCode account.
 
 ## Installation
 
-**v0.2.16 availability:** Apple Silicon macOS CLI, TUI, local server, and desktop app.
+**v0.2.17 availability:** Apple Silicon macOS CLI, TUI, local server, and desktop app.
 Windows, Linux, and Intel Mac packages are pending; the commands below document
 installer support, not a promise that every platform has a published package.
 Check the release asset list before installing. macOS builds are ad-hoc signed
@@ -57,7 +59,7 @@ curl -fsSL https://xailoncode.infinialabs.ai/install.sh | sh -s -- update --comp
 
 Use `--component desktop` to install the GUI with the CLI setup tools needed
 for provider configuration. `--component all` has the same complete installation. Linux ARM64 currently supports only `--component cli`.
-Use `--version v0.2.16` to pin a version and `--dry-run` to see the plan without
+Use `--version v0.2.17` to pin a version and `--dry-run` to see the plan without
 changing your machine. Portable CLI installations default to `~/.local/bin`;
 `--prefix /absolute/path` chooses another prefix. Native Linux package
 installations use their system locations instead.
@@ -75,7 +77,7 @@ irm https://xailoncode.infinialabs.ai/install.ps1 | iex
 & ([scriptblock]::Create((irm 'https://xailoncode.infinialabs.ai/install.ps1'))) -Action update -Component all
 ```
 
-Windows accepts `-Component cli|desktop|all`, `-Version v0.2.16`, and `-DryRun`.
+Windows accepts `-Component cli|desktop|all`, `-Version v0.2.17`, and `-DryRun`.
 It uses native MSI installers and installs the Microsoft Visual C++ runtime if
 missing, checking Microsoft's Authenticode signature first. The desktop MSI
 handles WebView2. Native package installation can ask for administrator approval.
@@ -267,6 +269,7 @@ Useful commands:
 | `/help` | Commands and keyboard shortcuts |
 | `/model` | Select a model |
 | `/plugins` | Add the Infinia Marketplace, then browse and install plugins |
+| `/<name>` | Run a skill, recipe, or command by name; `@name` also calls it |
 | `/mods` | Open shared plugin Markdown panels |
 | `/evidence` | Inspect the latest verification report and check freshness |
 | `/routing` | Show the active model route and estimated spending |
@@ -413,6 +416,38 @@ xailon plugin install frontend-design@infinia
 
 Installed plugins load in new sessions. Some MCP plugins need credentials or tools,
 such as a GitHub token or Docker, as listed on their catalog page.
+
+## Call skills, recipes, and plugins
+
+Every skill, recipe, and command, including those from installed plugins, can be
+called by name:
+
+- Start a message with `/name` to run it, with the rest of the line as its input:
+  `/youtube-production a video about ocean tides`.
+- Write `@name` anywhere in a message to call it with the rest of the message as its
+  input: `@frontend-design build a pricing page`. A path such as `@src/main.rs` is
+  still a file mention.
+
+A recipe plugin's main recipe runs as `/<plugin name>`. As you type `/` or `@`, the
+terminal UI and the desktop app suggest matching skills, recipes, and commands, each
+labeled by kind; the line-based CLI completes them with Tab. A plugin you install from
+`/plugins` can be called in the same session.
+
+## Answer clarifying questions
+
+When XailonCode needs a detail before it starts, it asks a few questions with
+suggested answers instead of guessing.
+
+- **Terminal UI:** the questions appear one at a time. Use ↑/↓ to choose, or start
+  typing for your own answer. Enter moves to the next question, ← goes back, and Esc
+  lets you answer in the chat instead.
+- **Desktop:** pick an option or type an answer for each question in the card under
+  the message, then select **Send answers**.
+- **CLI:** answer each question in a picker; choose **Other** to type, or **Skip** to
+  leave it to XailonCode.
+
+Your answers are sent as your next message, and unanswered questions are left to
+XailonCode's judgment.
 
 ## Verification evidence
 

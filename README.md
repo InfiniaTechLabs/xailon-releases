@@ -20,12 +20,11 @@ This is the public distribution repository. It contains documentation, installat
 helpers, checksums, and release metadata. Application binaries are attached to
 GitHub Releases rather than stored in Git history.
 
-## Latest: v0.2.16
+## Latest: v0.2.17
 
-Add the curated [Infinia Marketplace](https://xailon-marketplace.infinialabs.ai/)
-in one step from the CLI, the terminal UI's new `/plugins` command, or the desktop
-app, then review and install plugins. See [what changed](CHANGELOG.md) and the
-[user guide](USER_GUIDE.md).
+Call any skill, recipe, or plugin by name with `/name` or `@name`, with suggestions as
+you type, and answer XailonCode's clarifying questions in a form instead of raw text.
+See [what changed](CHANGELOG.md) and the [user guide](USER_GUIDE.md).
 
 **Available:** Apple Silicon macOS CLI, TUI, server, and desktop. Windows, Linux,
 and Intel Mac packages are pending. macOS packages are ad-hoc signed and not
