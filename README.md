@@ -20,11 +20,12 @@ This is the public distribution repository. It contains documentation, installat
 helpers, checksums, and release metadata. Application binaries are attached to
 GitHub Releases rather than stored in Git history.
 
-## Latest: v0.2.14
+## Latest: v0.2.15
 
-Rich desktop Markdown and response controls; MCP management and shared Mods;
-revision-bound verification evidence; project model routing and estimated spending
-limits. See [what changed](CHANGELOG.md) and the [user guide](USER_GUIDE.md).
+Connect any OpenAI-, Anthropic-, or Ollama-compatible endpoint and pick from the
+models it serves; the list refreshes from the endpoint on later runs. The desktop
+app adds an Activity & Tasks panel. See [what changed](CHANGELOG.md) and the
+[user guide](USER_GUIDE.md).
 
 **Available:** Apple Silicon macOS CLI, TUI, server, and desktop. Windows, Linux,
 and Intel Mac packages are pending. macOS packages are ad-hoc signed and not

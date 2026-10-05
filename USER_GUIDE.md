@@ -1,6 +1,6 @@
 # XailonCode user guide
 
-For XailonCode **0.2.14** · CLI, terminal UI, and desktop app
+For XailonCode **0.2.15** · CLI, terminal UI, and desktop app
 
 - [Installation](#installation)
 - [Connect a model](#connect-a-model)
@@ -207,6 +207,27 @@ URL and model id; set a nonempty placeholder key only when that server does not
 require authentication. PowerShell uses `$env:XAILON_PROVIDER = "openai"` and the
 same `$env:NAME = "value"` syntax for the other variables.
 
+### Custom endpoints
+
+Connect any OpenAI-, Anthropic-, or Ollama-compatible server, such as a company
+gateway, an inference provider, or a model server on your machine. On first run,
+`xailon configure` offers **OpenAI-Compatible Endpoint**. Later, choose
+**Custom Providers → Add A Custom Provider**.
+
+1. Choose the API format, a display name, and the endpoint URL, for example
+   `https://api.example.com/v1` or `http://localhost:8000/v1`.
+2. Enter an API key if the endpoint requires one. It is stored in the keyring.
+3. XailonCode asks the endpoint for its models and shows every model it serves.
+   Type to search when the list is long, then choose a default.
+4. If the endpoint does not list its models, enter model ids separated by commas.
+
+The model list stays current after setup. Each new desktop or client session
+reloads it from the endpoint, and running `xailon configure` for the provider
+fetches it again. Models added on the server appear without editing
+configuration; models the server no longer lists disappear from the picker. If
+the endpoint cannot be reached, the last loaded list is kept. Custom providers
+set up before 0.2.15 also refresh this way.
+
 Applications launched from Finder or the Windows Start menu do not necessarily
 inherit shell exports. Persist your settings with `xailon configure` for desktop
 use, then restart the app if you changed its provider configuration.
@@ -300,6 +321,14 @@ process, so starting `xailond` is not required to use the GUI.
    **Approvals** in the sidebar.
 6. Open **Settings** to choose System, Light, or Dark appearance, and to review
    model, sandbox, and approval settings.
+
+Select **Activity & Tasks** in the toolbar to open a side panel with
+**Activity**, **Tasks**, and **Output** tabs. Activity is a timeline of the
+current request's tool calls and reasoning summaries, using your display
+preferences. When the agent writes a task plan, it appears as a plan card with
+completion counts; only the latest plan per request stays in the conversation,
+and earlier versions remain in Activity. Failed plan updates stay visible. Use
+the arrow keys to move between tabs and Esc to close the panel.
 
 Enter sends a message; Shift+Enter adds a newline. Esc interrupts a running turn.
 On macOS, Cmd+1 opens Threads, Cmd+2 Approvals, Cmd+3 Automations, Cmd+4 Skills &
