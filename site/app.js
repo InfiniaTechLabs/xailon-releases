@@ -11,6 +11,10 @@ export function installerCommand(platform, component = 'cli', action = 'install'
   return `curl -fsSL ${base}/install.sh | sh${options ? ` -s -- ${options}` : ''}`;
 }
 
+export function platformAvailable(platform, component, cliPlatforms, desktopPlatforms) {
+  return cliPlatforms.includes(platform) && (component === 'cli' || desktopPlatforms.includes(platform));
+}
+
 function initialize() {
   const tabs = [...document.querySelectorAll('[data-platform]')];
   const component = document.querySelector('#component');
@@ -20,12 +24,15 @@ function initialize() {
   let platform = /Win/.test(navigator.platform) ? 'windows' : /Linux/.test(navigator.platform) ? 'linux' : 'macos';
   function update() {
     tabs.forEach(tab => { const active = tab.dataset.platform === platform; tab.setAttribute('aria-selected', String(active)); tab.tabIndex = active ? 0 : -1; });
-    command.textContent = installerCommand(platform, component.value, action.value);
-    document.querySelector('#install-hint').textContent = platform === 'windows'
+    const panel = document.querySelector('.installer-panel');
+    const available = platformAvailable(platform, component.value, panel.dataset.cliPlatforms.split(','), panel.dataset.desktopPlatforms.split(','));
+    command.textContent = available ? installerCommand(platform, component.value, action.value) : 'This platform package is not published yet.';
+    document.querySelector('#copy-command').disabled = !available;
+    document.querySelector('#install-hint').textContent = !available ? 'Choose an available platform or check Manual downloads for release availability.' : platform === 'windows'
       ? 'Run in PowerShell. Native installers may request administrator approval.'
       : platform === 'linux'
         ? 'Run in your shell. Native packages resolve dependencies; desktop is x86-64 only.'
-        : 'Run in Terminal. The installer detects Apple Silicon or Intel.';
+        : 'Run in Terminal on an Apple Silicon Mac. Intel Mac packages are pending.';
     document.querySelector('#inspect-script').href = platform === 'windows' ? '/install.ps1' : '/install.sh';
     status.textContent = '';
   }

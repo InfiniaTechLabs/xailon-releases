@@ -1,12 +1,16 @@
 # XailonCode user guide
 
-For XailonCode **0.2.13** · CLI, terminal UI, and desktop app
+For XailonCode **0.2.14** · CLI, terminal UI, and desktop app
 
 - [Installation](#installation)
 - [Connect a model](#connect-a-model)
 - [Use the terminal UI](#use-the-terminal-ui)
 - [Use the command line](#use-the-command-line)
 - [Use the desktop app](#use-the-desktop-app)
+- [Rich responses and display controls](#rich-responses-and-display-controls)
+- [MCP servers and shared Mods](#mcp-servers-and-shared-mods)
+- [Verification evidence](#verification-evidence)
+- [Project privacy and spending](#project-privacy-and-spending)
 - [Approvals and workspace access](#approvals-and-workspace-access)
 - [Configuration and saved sessions](#configuration-and-saved-sessions)
 - [Updates and removal](#updates-and-removal)
@@ -18,6 +22,12 @@ provider can incur that provider's charges; a locally hosted endpoint keeps mode
 requests local. You do not need a XailonCode account.
 
 ## Installation
+
+**v0.2.14 availability:** Apple Silicon macOS CLI, TUI, local server, and desktop app.
+Windows, Linux, and Intel Mac packages are pending; the commands below document
+installer support, not a promise that every platform has a published package.
+Check the release asset list before installing. macOS builds are ad-hoc signed
+and are not Apple-notarized.
 
 Download from [XailonCode Releases](https://github.com/InfiniaTechLabs/xailon-releases/releases).
 Choose the operating system and processor shown in the release asset name.
@@ -46,7 +56,7 @@ curl -fsSL https://xailoncode.infinialabs.ai/install.sh | sh -s -- update --comp
 
 Use `--component desktop` to install the GUI with the CLI setup tools needed
 for provider configuration. `--component all` has the same complete installation. Linux ARM64 currently supports only `--component cli`.
-Use `--version v0.2.13` to pin a version and `--dry-run` to see the plan without
+Use `--version v0.2.14` to pin a version and `--dry-run` to see the plan without
 changing your machine. Portable CLI installations default to `~/.local/bin`;
 `--prefix /absolute/path` chooses another prefix. Native Linux package
 installations use their system locations instead.
@@ -64,7 +74,7 @@ irm https://xailoncode.infinialabs.ai/install.ps1 | iex
 & ([scriptblock]::Create((irm 'https://xailoncode.infinialabs.ai/install.ps1'))) -Action update -Component all
 ```
 
-Windows accepts `-Component cli|desktop|all`, `-Version v0.2.13`, and `-DryRun`.
+Windows accepts `-Component cli|desktop|all`, `-Version v0.2.14`, and `-DryRun`.
 It uses native MSI installers and installs the Microsoft Visual C++ runtime if
 missing, checking Microsoft's Authenticode signature first. The desktop MSI
 handles WebView2. Native package installation can ask for administrator approval.
@@ -234,6 +244,9 @@ Useful commands:
 | --- | --- |
 | `/help` | Commands and keyboard shortcuts |
 | `/model` | Select a model |
+| `/mods` | Open shared plugin Markdown panels |
+| `/evidence` | Inspect the latest verification report and check freshness |
+| `/routing` | Show the active model route and estimated spending |
 | `/status` | Session, model, context, and usage details |
 | `/diff` | Review the workspace's Git diff |
 | `/compact` | Summarize the conversation to free context |
@@ -304,6 +317,229 @@ in-process scheduler to execute tasks.
 **Open a document folder…** creates a Cowork project for reports and documents.
 Its container-based tools may require Docker or Podman; installing XailonCode alone
 does not install a container runtime.
+
+## Rich responses and display controls
+
+Desktop conversations render Markdown tables, task lists, strikethrough, links,
+headings, lists, quotes, highlighted code blocks, and mathematical notation.
+Wide tables scroll horizontally; code blocks include **Copy code**.
+
+Open **Response display** above the conversation:
+
+- **Stream responses** shows text as it arrives. Turn it off to show responses when the turn finishes.
+- Set **Tool calls** and **Reasoning** independently to **Expanded**, **Collapsed**, or **Hidden**.
+- **Collapse all tool calls** folds existing tool output in one action.
+
+These preferences change presentation only. Approvals and errors remain visible.
+Reasoning shows only summaries supplied by the provider, when available.
+
+## MCP servers and shared Mods
+
+Open desktop **Extensions → MCP servers → Add MCP server**. Choose a local process
+(executable plus one argument per line) or a remote **Streamable HTTP** endpoint.
+Legacy SSE is not supported. Credential rows store references to Xailon's secret
+store, rather than placing secret values in the server configuration.
+
+**Save server** saves configuration without starting it. **Test saved connection**
+starts the saved process or connects to the remote server, initializes MCP, and
+lists tools without invoking them. Expand a tool to inspect its input schema.
+You can enable, disable, edit, or remove servers. Start a new thread to load changes.
+
+Under **Extensions → Plugins & hooks**, enter a Git URL or `plugin@marketplace`,
+optionally pinned to a branch, tag, or commit. **Review changes** shows the source,
+exact commit, changed files, and contributed executable hooks and MCP servers.
+Runnable code requires explicit acknowledgement. **Review update** lets you
+inspect an update before applying its reviewed snapshot.
+
+**Extensions → Mods** displays shared Markdown panels. Use `xailon mods` in the
+CLI or `/mods` in the TUI; append `plugin/panel` to open a specific panel.
+Mods v1 supports typed lifecycle hooks and static Markdown panels. It does not
+run arbitrary UI components or directly load Claude Code TypeScript function
+modules; those modules need porting to Xailon's hook protocol.
+
+## Verification evidence
+
+Xailon records command outcomes and the observed Git workspace for turns run through
+its shared engine (desktop, TUI, and `xailon exec`). This is the first part of
+verified delivery: inspect what ran and whether its recorded file contents still
+match. A report is not a certificate that the user's task is complete.
+
+### Inspect a report
+
+- **Desktop:** each finished turn has a Verification evidence card. Expand
+  Commands and revision to inspect exit codes, output excerpts, commit and workspace
+  fingerprint. Recheck workspace compares files without rerunning commands. Copy
+  report JSON exports the displayed report. A resumed conversation can load its
+  latest saved evidence.
+- **TUI:** `/evidence` loads the latest report and compares the workspace again.
+- **CLI:** `xailon evidence SESSION_ID` shows the latest report and checks current
+  files; add `--json` for the complete report.
+- **Automation:** `xailon exec --json` emits `verification_report` before
+  `turn_completed` or `turn_failed`. The final answer still goes to stdout in text
+  mode; the evidence summary goes to stderr and respects `--quiet`.
+
+### Status meanings
+
+| Status | Meaning |
+| --- | --- |
+| Passed at capture | Tool-reported exit code was zero, command completed, and the observed workspace files matched before and after the command and at report creation. |
+| Failed | Nonzero exit code, failed command, or declined execution. |
+| Stale | Workspace contents changed during or after a successful command. Rerun the relevant checks to obtain fresh evidence. |
+| Unverified | Missing exit code, unfinished command, or unavailable workspace snapshot. |
+
+Only conservative command patterns count in the check summary: Cargo tests/checks/
+Clippy, `cargo fmt --check`, Go tests/vet, pytest/unittest, Node's test runner,
+and common npm/pnpm/yarn test, lint, typecheck, build and check scripts. Commands
+containing shell control operators are not recognized checks. Other commands are
+still listed. Check recognition does not establish test coverage or correctness;
+a script named `test` can do anything. Tool output text cannot supply a missing
+exit code.
+
+Open plan steps, failed tools, interrupted turns and unavailable workspace
+information appear under Needs review. Empty reports explicitly say that no
+recognized checks were recorded.
+
+### Storage and scope
+
+Reports are private local JSON files in the `evidence` directory beside the session
+store. Unique report IDs preserve earlier reports when a session resumes. The
+original report is retained; rechecking changes the displayed/exported copy.
+`xailon exec --no-session` emits evidence but does not save report files.
+
+The SHA-256 fingerprint includes tracked and non-ignored Git files, their paths,
+contents and executable bits on Unix. Commit IDs are recorded separately: committing
+unchanged contents does not invalidate a result. Capture has a two-second / 256 MiB
+limit; unsupported paths, submodules, non-Git folders and capture failures remain
+unverified. Symlink targets are recorded, but their external contents are not.
+
+Snapshots are observations at event boundaries, not an atomic filesystem snapshot
+or signed attestation. Ignored files, dependencies outside the repository, services,
+environment variables and remote execution are outside the fingerprint. Check
+commands and exit codes are supplied by the tool adapter; third-party tools are
+not independently attested. Background commands without a final exit code remain
+unverified. Reports currently do not collect screenshots, full test artifacts, or
+independent task acceptance results. Manually verify those when relevant.
+
+Reports include command strings, local paths and up to 4,000 characters of each
+command's output. Review exports before sharing them. External edits are detected
+when you recheck; the desktop does not continuously monitor historical reports.
+
+
+## Project privacy and spending
+
+XailonCode can pin a project's model requests to a local OpenAI-compatible server,
+allow an explicitly approved cloud profile, and enforce estimated spending limits.
+Projects without a policy keep their existing provider configuration.
+
+### Desktop
+
+Select a project and open **Settings → Privacy & spending**. Configure the local
+endpoint and model you have installed. Choose **Local only** or **Cloud allowed**.
+Cloud mode requires a cloud profile and an explicit consent checkbox before saving.
+Editing a profile or budget clears that checkbox.
+
+A saved policy applies when a session first acquires its routing policy. Sessions
+that already have a policy keep their snapshot, including after a restart. Start a
+new thread to change a pinned model, endpoint, or budget. The conversation's routing
+summary shows the active model, endpoint, reason, estimated committed spending,
+and unresolved requests. Expand it for per-turn and session limits.
+
+### CLI and TUI
+
+Save this as `routing.json`, replacing the model with one available on your local
+server. Endpoint values are origins: omit `/v1`, paths, queries, and credentials.
+The local server must already be installed and running.
+
+```json
+{
+  "mode": "local_only",
+  "local": {
+    "endpoint": "http://127.0.0.1:11434",
+    "model": "qwen3",
+    "api_key_env": null,
+    "input_usd_per_million": 0,
+    "output_usd_per_million": 0
+  },
+  "cloud": null,
+  "sensitive_paths": [".env", ".env.*", "**/.env", "**/.env.*", "secrets/**"],
+  "task_budget_usd": null,
+  "session_budget_usd": null,
+  "max_output_tokens": 4096
+}
+```
+
+```sh
+xailon routing --project /path/to/project --policy routing.json
+xailon routing --project /path/to/project
+```
+
+`--project` defaults to the current directory. To use cloud mode, set `mode` to
+`cloud_allowed`, add a `cloud` profile with the same fields as `local`, and pass
+`--approve-cloud` when saving. Cloud origins require HTTPS, except loopback fixture
+servers. Store only an environment variable name in `api_key_env`; Xailon reads the
+secret from its process environment. Desktop apps launched from Finder may not
+inherit your shell's variables.
+
+In the TUI, `/routing` shows the latest route and usage summary. Plain-text execution
+prints summaries to stderr; JSON execution emits additive `routing_status` events.
+`/model` and protocol model switching refuse changes to pinned project routes.
+
+### Privacy behavior
+
+- Local origins must use a literal loopback address or `localhost`. Xailon disables
+  HTTP proxies for local requests and refuses HTTP redirects for both profiles.
+- There is **no automatic cloud fallback** after local errors. Cloud approval is a
+  project-setting action followed by a new session, never an agent tool decision.
+- Any matching sensitive path locks the **whole session** to the local profile,
+  including future requests after the path is removed. Hidden and ignored paths
+  are included. Paths are not redacted and then sent to cloud.
+- Scans that fail, exceed 100,000 entries or two seconds, or encounter a symlink
+  choose local. Empty pattern lists disable sensitive-path scanning. Globs are
+  relative to the project/workspace; use `secrets/**` for a directory's contents.
+- Policies are private user configuration, outside the repository, indexed by
+  canonical project path. Subdirectories and Xailon's managed worktrees inherit
+  the nearest project policy. Both the original project and active workspaces are
+  scanned. Moving a project requires saving its policy at the new location.
+- Delegated agents inherit the guarded provider and share its spending ledger.
+  Their workspaces join the sensitive-path scan. An agent cannot overwrite a
+  session that already owns a different routing ledger.
+
+This controls model requests through the session provider. It is **not operating
+system network isolation**: tools, MCP servers, hooks, extensions, telemetry, and
+independently configured services can still use the network. A loopback server can
+itself proxy to cloud; use a server/model you trust to perform local inference.
+Model names containing `cloud` are rejected for local profiles, but that check
+cannot attest where inference actually runs. Files outside scanned workspaces and
+sensitive text pasted into prompts are not classified. Use Local only when unsure.
+
+### Estimated budgets
+
+`task_budget_usd` limits a user turn, including provider calls for naming,
+compaction, and delegated agents charged during that turn. `session_budget_usd`
+accumulates across turns and resumes. Delegates cannot reset the parent's turn
+budget. Output is bounded by `max_output_tokens` for each model request.
+
+Before transmitting, Xailon durably reserves estimated input and maximum output
+cost under a file lock. A clean response with usage settles that reservation using
+the configured input/output rates. Cancellation, failure, or missing usage keeps
+the reservation because the request may have been billed. A later turn resets only
+its turn counter. Session spending and unresolved reservations remain. Provider
+retries are disabled; another attempt requires another reservation.
+
+These are **estimated spending limits, not invoice caps**. Prices are user-supplied
+USD per million tokens and must be present for every configured profile if a budget
+is set. Input reservations use serialized request bytes plus an overhead allowance;
+provider tokenization, images, caching, reasoning charges, and other billing rules
+can differ. A reported cost can exceed a reservation; subsequent requests are then
+blocked. Unpriced routes cannot enforce budgets and their displayed totals are
+incomplete. Zero prices explicitly treat that profile as free.
+
+The private ledger lives in `routing` beside session storage and stores policies,
+workspace paths, counters, and reservation IDs, not prompt bodies or API secrets.
+Routing bookkeeping is retained even for ephemeral execution so repeated requests
+cannot silently discard a budget within that session. It is not tamper-proof against
+someone who controls the local user account. To change a budget or discard uncertain
+reservations, start a new session; there is no automatic refund or silent reset.
 
 ## Approvals and workspace access
 

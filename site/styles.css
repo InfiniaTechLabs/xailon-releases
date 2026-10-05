@@ -8,3 +8,13 @@
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}@media(forced-colors:active){.button,.copy-button,select,input{border:1px solid ButtonText}.status-dot{background:CanvasText}.product-preview{border:1px solid CanvasText}.terminal-diff,.terminal-input{border:1px solid CanvasText}}
 
 @media(pointer:coarse){.platform-tabs button,.installer-options select,.button.small{min-height:44px}.copy-button{min-height:44px;min-width:54px}}
+
+.feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.feature-grid article { min-width: 0; }
+.feature-grid h3 { margin-top: 1.5rem; }
+.feature-scope { max-width: 760px; line-height: 1.7; margin-top: 2rem; }
+.copy-button:disabled { opacity: .5; cursor: not-allowed; }
+@media (max-width: 700px) { .feature-grid { grid-template-columns: 1fr; } }
+.feature-grid { row-gap: 2.5rem; }
+.feature-grid article:nth-child(odd) { border-left: 0; padding-left: 0; }
+@media (max-width: 700px) { .feature-grid article { border-left: 0; padding-left: 0; } }

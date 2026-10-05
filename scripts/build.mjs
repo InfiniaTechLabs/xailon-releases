@@ -9,7 +9,7 @@ await copyFile(path.join(root, 'node_modules/@fontsource-variable/manrope/files/
 for (const name of await readdir(path.join(root, 'site'))) {
   await copyFile(path.join(root, 'site', name), path.join(out, name));
 }
-for (const name of ['install.sh', 'install.ps1', 'USER_GUIDE.md', 'LICENSE', 'NOTICE']) {
+for (const name of ['install.sh', 'install.ps1', 'USER_GUIDE.md', 'CHANGELOG.md', 'LICENSE', 'NOTICE']) {
   await copyFile(path.join(root, name), path.join(out, name));
 }
 const release = JSON.parse(await readFile(path.join(root, 'release.json'), 'utf8'));
@@ -42,9 +42,8 @@ let content = marked(markdown).replaceAll('href="install.sh"', 'href="/install.s
 const chunks = content.split(/(?=<h2 )/);
 content = chunks.map((chunk, index) => index ? `<section class="guide-section">${chunk}</section>` : chunk).join('');
 let home = await readFile(path.join(root, 'site/index.html'), 'utf8');
-if (release.status !== 'published') {
-  home = home.replace('Public preview · Check the release notes for platform availability and signing status.', 'Preview packages are being built. Install commands will work after the release is published.');
-}
+const platformsFor = component => release.status !== 'published' ? '' : [...new Set(release.assets.filter(asset => asset.component === component).map(asset => asset.target.includes('apple-darwin') ? 'macos' : asset.target.includes('windows') ? 'windows' : 'linux'))].join(',');
+home = home.replace('{{CLI_PLATFORMS}}', platformsFor('cli')).replace('{{DESKTOP_PLATFORMS}}', platformsFor('desktop'));
 await writeFile(path.join(out, 'index.html'), home);
 const header = home.match(/<header class="site-header[\s\S]*?<\/header>/)[0].replace('href="#workflow"', 'href="/#workflow"').replace('href="#install"', 'href="/#install"');
 const footer = home.match(/<footer class="site-footer[\s\S]*?<\/footer>/)[0];

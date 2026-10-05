@@ -31,3 +31,17 @@ test('installer endpoints are not cached and use plain text', async () => {
     assert.ok(headers.includes(`${endpoint}\n  Content-Type: text/plain; charset=utf-8\n  Cache-Control: no-store`));
   }
 });
+
+test('copyable install commands are limited to published components', async () => {
+  const { platformAvailable } = await import('../site/app.js');
+  assert.equal(platformAvailable('macos', 'cli', ['macos'], []), true);
+  assert.equal(platformAvailable('macos', 'all', ['macos'], []), false);
+  assert.equal(platformAvailable('windows', 'cli', ['macos'], ['macos']), false);
+  assert.equal(platformAvailable('macos', 'all', ['macos'], ['macos']), true);
+  const home = await readFile(new URL('../dist/index.html', import.meta.url), 'utf8');
+  const guide = await readFile(new URL('../dist/guide/index.html', import.meta.url), 'utf8');
+  assert.ok(!home.includes('{{CLI_PLATFORMS}}'));
+  for (const match of home.matchAll(/href="\/guide\/#([^"]+)"/g)) {
+    assert.ok(guide.includes(`id="${match[1]}"`), `Missing feature guide: ${match[1]}`);
+  }
+});

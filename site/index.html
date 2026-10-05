@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>XailonCode — Build with your own tools and models</title>
-  <meta name="description" content="Meet XailonCode: a local-first AI coding agent for your terminal and desktop. Bring your model. Keep control of the work. Install on macOS, Windows, or Linux.">
+  <meta name="description" content="Meet XailonCode: a local-first AI coding agent for your terminal and desktop. Bring your model. Keep control of the work. Explore rich responses, MCP extensions, verification evidence, and project model routing.">
   <meta property="og:title" content="XailonCode — Build with intent"><meta property="og:description" content="Your tools. Your model. Your workspace. An AI coding agent for the way you work.">
   <meta property="og:type" content="website"><meta property="og:url" content="https://xailoncode.infinialabs.ai/">
   <link rel="canonical" href="https://xailoncode.infinialabs.ai/"><link rel="icon" href="/saqr.svg" type="image/svg+xml">
@@ -21,7 +21,7 @@
     <h1>Build with<br><em>intent.</em></h1>
     <p class="hero-description">An AI agent that works where you do.<br>In your terminal. On your desktop.<br>With the tools and models you choose.</p>
     <div class="hero-actions"><a href="#install" class="button">Install XailonCode <span aria-hidden="true">↗</span></a><a href="/guide/" class="text-link">Find your starting point <span aria-hidden="true">→</span></a></div>
-    <p class="hero-footnote">macOS · Windows · Linux <span> / </span> No XailonCode account needed</p>
+    <p class="hero-footnote">Apple Silicon macOS preview <span> / </span> Bring your own model</p>
   </div>
   <div class="product-preview" aria-label="Illustrative XailonCode terminal session">
     <div class="terminal-chrome"><span class="window-dots" aria-hidden="true">● ● ●</span><span>xailon — your-project</span><span class="preview-label">EXAMPLE SESSION</span></div>
@@ -49,17 +49,27 @@
     <article><span class="surface-number">03 / DESKTOP</span><div class="surface-icon" aria-hidden="true">▣</div><h3>Room to see the work.</h3><p>Projects and threads together, with a terminal, change review, and clearly labeled controls.</p><a href="#install" class="text-link" data-desktop-link>Get the desktop app <span aria-hidden="true">↗</span></a></article>
   </div>
 </section>
+<section class="workflow wrap" id="features" aria-labelledby="features-title">
+  <div class="section-heading"><p class="eyebrow"><a href="https://github.com/InfiniaTechLabs/xailon-releases/releases/tag/v0.2.14">NEW IN v0.2.14 ↗</a></p><h2 id="features-title">More clarity.<br>More control.</h2><p>Read the result. Inspect the evidence.<br>Choose where your model requests go.</p></div>
+  <div class="surfaces feature-grid">
+    <article><span class="surface-number">01 / READABLE RESPONSES</span><h3>Make room for the answer.</h3><p>Rich Markdown tables, highlighted code, task lists, and math. Stream replies, hide reasoning summaries, or collapse every tool call while keeping approvals visible.</p><a class="text-link" href="/guide/#rich-responses-and-display-controls">Shape your conversation →</a></article>
+    <article><span class="surface-number">02 / EXTENSIONS &amp; MODS</span><h3>Your tools, connected.</h3><p>Add and test MCP servers, inspect tool schemas, review plugin updates, and open shared Mods panels across desktop, CLI, and TUI.</p><a class="text-link" href="/guide/#mcp-servers-and-shared-mods">Connect your tools →</a></article>
+    <article><span class="surface-number">03 / VERIFICATION EVIDENCE</span><h3>See what actually ran.</h3><p>Inspect command outcomes and the workspace revision they checked. Recheck for changed files and see when successful evidence has become stale.</p><a class="text-link" href="/guide/#verification-evidence">Understand the evidence →</a></article>
+    <article><span class="surface-number">04 / PRIVACY &amp; SPENDING</span><h3>Set the boundaries.</h3><p>Pin a local model or explicitly approve cloud use. Sensitive paths keep model requests local. Set estimated per-turn and session budgets, shared across delegated agents.</p><a class="text-link" href="/guide/#project-privacy-and-spending">Configure a project policy →</a></article>
+  </div>
+  <p class="feature-scope">Routing controls model requests, not tool networking. Spending limits are estimates, not provider invoice caps. <a href="/guide/#project-privacy-and-spending">Read the scope and setup details.</a></p>
+</section>
 <section class="control-section wrap">
   <div><p class="eyebrow">CAPABLE, WITH BOUNDARIES</p><h2>Understand the change.<br>Choose the next step.</h2><p>XailonCode reads, edits, and runs tools in your workspace. Review a diff, approve an action, or keep a session read-only. You decide what happens next.</p><a class="text-link" href="/guide/#approvals-and-workspace-access">How approvals work <span aria-hidden="true">→</span></a></div>
   <div class="approval-demo" aria-label="Example approval request"><span class="review-label"><span class="status-dot"></span> YOUR INPUT IS NEEDED</span><h3>Allow this action?</h3><p>Run the project’s test suite after updating the component.</p><code>npm test</code><div class="demo-actions"><span class="demo-primary">Allow once <kbd>Y</kbd></span><span>Deny <kbd>N</kbd></span></div><small>Illustrative preview · Real actions wait for your choice.</small></div>
 </section>
 <section class="install-section" id="install"><div class="wrap install-layout">
-  <div><p class="eyebrow">READY WHEN YOU ARE</p><h2>A simple install.<br>A new way to build.</h2><p>One command detects your platform, downloads the right package, and verifies its checksum. Use the same installer when it’s time to update.</p><a href="/guide/#installation" class="text-link">Installation guide <span aria-hidden="true">↗</span></a><p class="release-note" id="release-note">Public preview · Check the release notes for platform availability and signing status.</p></div>
-  <div class="installer-panel">
+  <div><p class="eyebrow">READY WHEN YOU ARE</p><h2>A simple install.<br>A new way to build.</h2><p>One command detects your platform, downloads the right package, and verifies its checksum. Use the same installer when it’s time to update.</p><a href="/guide/#installation" class="text-link">Installation guide <span aria-hidden="true">↗</span></a><p class="release-note" id="release-note">v0.2.14 public preview · Apple Silicon macOS CLI + desktop. Other platforms pending. Ad-hoc signed; not Apple-notarized.</p></div>
+  <div class="installer-panel" data-cli-platforms="{{CLI_PLATFORMS}}" data-desktop-platforms="{{DESKTOP_PLATFORMS}}">
     <div class="platform-tabs" role="tablist" aria-label="Operating system"><button type="button" role="tab" aria-selected="true" aria-controls="install-command" data-platform="macos">macOS</button><button type="button" role="tab" aria-selected="false" aria-controls="install-command" data-platform="windows" tabindex="-1">Windows</button><button type="button" role="tab" aria-selected="false" aria-controls="install-command" data-platform="linux" tabindex="-1">Linux</button></div>
     <div class="installer-options"><label>Install<select id="component"><option value="cli">CLI + terminal UI</option><option value="all">CLI + desktop app</option></select></label><label>Action<select id="action"><option value="install">Install</option><option value="update">Update</option></select></label></div>
     <div id="install-command" role="tabpanel" aria-label="Installation command" tabindex="0"><pre><code id="command-text">curl -fsSL https://xailoncode.infinialabs.ai/install.sh | sh</code></pre><button class="copy-button" id="copy-command" type="button" aria-label="Copy installation command">Copy <span aria-hidden="true">⧉</span></button></div>
-    <p class="install-hint" id="install-hint">Run in Terminal. The installer detects Apple Silicon or Intel.</p><p class="copy-status" role="status" id="copy-status"></p>
+    <p class="install-hint" id="install-hint">Run in Terminal on an Apple Silicon Mac. Intel Mac packages are pending.</p><p class="copy-status" role="status" id="copy-status"></p>
     <div class="installer-bottom"><a href="/install.sh" id="inspect-script">Read the installer ↗</a><a href="https://github.com/InfiniaTechLabs/xailon-releases/releases">Manual downloads ↗</a></div>
   </div>
 </div></section>
