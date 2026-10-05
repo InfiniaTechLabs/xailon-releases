@@ -1,5 +1,16 @@
 # XailonCode releases
 
+## v0.2.16 — Infinia Marketplace
+
+- **Infinia Marketplace everywhere:** add the curated catalog in one step with `xailon plugin marketplace add` (or `add infinia`), the new TUI `/plugins` command, or **Add Infinia Marketplace** in the desktop app.
+- **Browse and install from the TUI:** `/plugins` lists every marketplace plugin with search, shows the source, pinned commit and runnable code, and installs only after you choose Install.
+- **Desktop marketplace section:** one-click add, **Browse catalog**, plugin search, installed labels, and click-to-review.
+- **Fix:** a terminal UI test no longer depends on the number of slash commands.
+
+### Packages and limits
+
+Apple Silicon macOS CLI/TUI/server archive and desktop DMG. Builds are ad-hoc signed, not Apple-notarized. Other platforms remain pending and are not advertised as downloadable. Use the public install/update scripts; the CLI's built-in `xailon update` still targets the source repository.
+
 ## v0.2.15 — Your endpoint, your models
 
 - **Custom endpoints with model discovery:** first-run setup offers an OpenAI-compatible endpoint option. Adding any OpenAI-, Anthropic-, or Ollama-compatible endpoint loads the models it serves, with search for long lists. Manual entry is needed only when the endpoint does not list models.

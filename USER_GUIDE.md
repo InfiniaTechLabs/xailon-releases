@@ -1,6 +1,6 @@
 # XailonCode user guide
 
-For XailonCode **0.2.15** · CLI, terminal UI, and desktop app
+For XailonCode **0.2.16** · CLI, terminal UI, and desktop app
 
 - [Installation](#installation)
 - [Connect a model](#connect-a-model)
@@ -9,6 +9,7 @@ For XailonCode **0.2.15** · CLI, terminal UI, and desktop app
 - [Use the desktop app](#use-the-desktop-app)
 - [Rich responses and display controls](#rich-responses-and-display-controls)
 - [MCP servers and shared Mods](#mcp-servers-and-shared-mods)
+- [Infinia Marketplace](#infinia-marketplace)
 - [Verification evidence](#verification-evidence)
 - [Project privacy and spending](#project-privacy-and-spending)
 - [Approvals and workspace access](#approvals-and-workspace-access)
@@ -265,6 +266,7 @@ Useful commands:
 | --- | --- |
 | `/help` | Commands and keyboard shortcuts |
 | `/model` | Select a model |
+| `/plugins` | Add the Infinia Marketplace, then browse and install plugins |
 | `/mods` | Open shared plugin Markdown panels |
 | `/evidence` | Inspect the latest verification report and check freshness |
 | `/routing` | Show the active model route and estimated spending |
@@ -385,6 +387,32 @@ CLI or `/mods` in the TUI; append `plugin/panel` to open a specific panel.
 Mods v1 supports typed lifecycle hooks and static Markdown panels. It does not
 run arbitrary UI components or directly load Claude Code TypeScript function
 modules; those modules need porting to Xailon's hook protocol.
+
+## Infinia Marketplace
+
+The [Infinia Marketplace](https://xailon-marketplace.infinialabs.ai/) is a curated
+catalog of plugins, skills, and MCP servers. Each entry is pinned to a reviewed
+commit. Add it once, then install plugins by name. Every install shows the source,
+the pinned commit, and any code the plugin can run, and code-running plugins need
+your approval.
+
+- **Terminal UI:** type `/plugins`. While the marketplace is missing, the first
+  entry adds it. Type to filter, then press Enter on a plugin to review it, and
+  choose **Install** or **Cancel**. Installed plugins are labeled. You can also use
+  `/plugins add` and `/plugins install github@infinia`.
+- **Desktop:** open **Extensions → Plugins & hooks**. Under **Marketplaces**, select
+  **Add Infinia Marketplace**, or **Browse catalog** to open the website. Search the
+  plugins and select one to review it. **Add another marketplace** accepts any
+  marketplace repository URL.
+- **CLI:**
+
+```bash
+xailon plugin marketplace add          # the Infinia Marketplace; same as `add infinia`
+xailon plugin install frontend-design@infinia
+```
+
+Installed plugins load in new sessions. Some MCP plugins need credentials or tools,
+such as a GitHub token or Docker, as listed on their catalog page.
 
 ## Verification evidence
 

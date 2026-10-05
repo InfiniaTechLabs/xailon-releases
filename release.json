@@ -1,26 +1,26 @@
 {
-  "version": "v0.2.15",
+  "version": "v0.2.16",
   "channel": "preview",
   "status": "published",
-  "source_commit": "9d729a477fed046573ad2869aa96efe6c85b385d",
+  "source_commit": "7667375ceba58daba4c0a2e30f7e4e4a6192a214",
   "repository": "InfiniaTechLabs/xailon-releases",
-  "release_url": "https://github.com/InfiniaTechLabs/xailon-releases/releases/tag/v0.2.15",
+  "release_url": "https://github.com/InfiniaTechLabs/xailon-releases/releases/tag/v0.2.16",
   "assets": [
     {
       "name": "xailon-aarch64-apple-darwin.tar.bz2",
       "target": "aarch64-apple-darwin",
       "component": "cli",
-      "sha256": "a8e9264b5557406df7c9f231addc46f92f9b87508a2dfb5950799945cf01de3c",
-      "size": 104505561,
-      "url": "https://github.com/InfiniaTechLabs/xailon-releases/releases/download/v0.2.15/xailon-aarch64-apple-darwin.tar.bz2"
+      "sha256": "24c580c83b73d188f5c9dacc849facc8a7b4470a48971b81d3d5e1f6f6422723",
+      "size": 104606635,
+      "url": "https://github.com/InfiniaTechLabs/xailon-releases/releases/download/v0.2.16/xailon-aarch64-apple-darwin.tar.bz2"
     },
     {
       "name": "xailon-desktop-aarch64-apple-darwin.dmg",
       "target": "aarch64-apple-darwin",
       "component": "desktop",
-      "sha256": "849fc290b7c1c492e4e2ef74efaddc036dc4d6b8025edbc4e9f4cc4f04ff64f8",
-      "size": 50982433,
-      "url": "https://github.com/InfiniaTechLabs/xailon-releases/releases/download/v0.2.15/xailon-desktop-aarch64-apple-darwin.dmg"
+      "sha256": "a4c4803dfb8d50f23b0d96ecbba59a955c38cb4ceff18d06ce23942a0d5eacca",
+      "size": 50987458,
+      "url": "https://github.com/InfiniaTechLabs/xailon-releases/releases/download/v0.2.16/xailon-desktop-aarch64-apple-darwin.dmg"
     }
   ]
 }
