@@ -1,6 +1,6 @@
 # XailonCode user guide
 
-For XailonCode **0.2.17** · CLI, terminal UI, and desktop app
+For XailonCode **0.2.18** · CLI, terminal UI, and desktop app
 
 - [Installation](#installation)
 - [Connect a model](#connect-a-model)
@@ -26,7 +26,7 @@ requests local. You do not need a XailonCode account.
 
 ## Installation
 
-**v0.2.17 availability:** Apple Silicon macOS CLI, TUI, local server, and desktop app.
+**v0.2.18 availability:** Apple Silicon macOS CLI, TUI, local server, and desktop app.
 Windows, Linux, and Intel Mac packages are pending; the commands below document
 installer support, not a promise that every platform has a published package.
 Check the release asset list before installing. macOS builds are ad-hoc signed
@@ -59,7 +59,7 @@ curl -fsSL https://xailoncode.infinialabs.ai/install.sh | sh -s -- update --comp
 
 Use `--component desktop` to install the GUI with the CLI setup tools needed
 for provider configuration. `--component all` has the same complete installation. Linux ARM64 currently supports only `--component cli`.
-Use `--version v0.2.17` to pin a version and `--dry-run` to see the plan without
+Use `--version v0.2.18` to pin a version and `--dry-run` to see the plan without
 changing your machine. Portable CLI installations default to `~/.local/bin`;
 `--prefix /absolute/path` chooses another prefix. Native Linux package
 installations use their system locations instead.
@@ -77,7 +77,7 @@ irm https://xailoncode.infinialabs.ai/install.ps1 | iex
 & ([scriptblock]::Create((irm 'https://xailoncode.infinialabs.ai/install.ps1'))) -Action update -Component all
 ```
 
-Windows accepts `-Component cli|desktop|all`, `-Version v0.2.17`, and `-DryRun`.
+Windows accepts `-Component cli|desktop|all`, `-Version v0.2.18`, and `-DryRun`.
 It uses native MSI installers and installs the Microsoft Visual C++ runtime if
 missing, checking Microsoft's Authenticode signature first. The desktop MSI
 handles WebView2. Native package installation can ask for administrator approval.
@@ -646,6 +646,29 @@ trying an unfamiliar tool. Plan mode is read-only until you approve a plan.
 
 Trust only project folders you intend the agent to use. Put project-specific
 build, test, and style instructions in an `AGENTS.md` file at the project root.
+
+### Yolo mode
+
+`xailon --yolo` (also `xailon tui --yolo` or `xailon exec --yolo "..."`) runs with no
+sandbox and no approval prompts, so the agent works through a task without stopping.
+`XAILON_YOLO=1`, or `XAILON_YOLO: true` in your own `config.yaml`, does the same.
+
+- **Still enforced:** deny rules, tools you set to never allow, plan mode you turned
+  on, and an agent's tool list.
+- **Never runs:** deleting the filesystem root, a top-level folder, your home folder,
+  or the project folder or one of its parents, including paths built on a variable
+  that could be empty, such as `"$DIR"/*`.
+- **Cannot be switched on by a project:** a repository's configuration is ignored for
+  this setting.
+- **Refused as root** outside a container; `XAILON_DISABLE_YOLO=1` turns it off on a
+  machine.
+
+The CLI prints a warning and the terminal UI shows **⚠ YOLO** in its status line while
+it is on. Use it only in a disposable environment, such as a container, a virtual
+machine, or a throwaway checkout: anything the agent decides to run, runs.
+
+Outside yolo mode, the same deletions always ask first, even when a rule would allow
+them.
 
 ## Configuration and saved sessions
 

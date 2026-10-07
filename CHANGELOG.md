@@ -1,5 +1,14 @@
 # XailonCode releases
 
+## v0.2.18 — Yolo, with a floor
+
+- **Yolo mode:** `--yolo` (or `XAILON_YOLO=1`) runs without a sandbox and without approval prompts in the CLI, terminal UI, and `exec`. Deny rules, never-allowed tools, your own plan mode, and agent tool lists still apply. A project cannot turn it on, it refuses to run as root outside a container, and `XAILON_DISABLE_YOLO` turns it off on a machine. The terminal UI shows a **⚠ YOLO** badge.
+- **Deletion safeguard:** removing the filesystem root, a top-level folder, your home folder, the project folder or its parents, or `"$VAR"/*`-style paths always asks first, even when a rule allows `rm`, and is refused in yolo mode.
+
+### Packages and limits
+
+Apple Silicon macOS CLI/TUI/server archive and desktop DMG. Builds are ad-hoc signed, not Apple-notarized. Other platforms remain pending and are not advertised as downloadable. Use the public install/update scripts; the CLI's built-in `xailon update` still targets the source repository.
+
 ## v0.2.17 — Call it by name
 
 - **Skills, recipes, and plugins by name:** `/name` runs any skill, recipe, or command, and `@name` anywhere in a message calls it with the rest of the message as input. Installed plugins' recipes and commands are now callable, including the 100 recipe plugins in the Infinia Marketplace.
