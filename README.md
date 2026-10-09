@@ -20,11 +20,11 @@ This is the public distribution repository. It contains documentation, installat
 helpers, checksums, and release metadata. Application binaries are attached to
 GitHub Releases rather than stored in Git history.
 
-## Latest: v0.2.18
+## Latest: v0.2.20
 
-`--yolo` mode runs without a sandbox or approval prompts, with a deletion safeguard
-that never lets the agent remove your root, home, or project folder. See
-[what changed](CHANGELOG.md) and the [user guide](USER_GUIDE.md#yolo-mode).
+Steer the agent mid-turn, search past sessions, see each turn's changed files, and
+attach images in the desktop app. Your Claude Code and Codex hooks now run as-is. See
+[what changed](CHANGELOG.md) and the [user guide](USER_GUIDE.md).
 
 **Available:** Apple Silicon macOS CLI, TUI, server, and desktop. Windows, Linux,
 and Intel Mac packages are pending. macOS packages are ad-hoc signed and not

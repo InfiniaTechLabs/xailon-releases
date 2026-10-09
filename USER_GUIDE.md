@@ -1,6 +1,6 @@
 # XailonCode user guide
 
-For XailonCode **0.2.18** · CLI, terminal UI, and desktop app
+For XailonCode **0.2.20** · CLI, terminal UI, and desktop app
 
 - [Installation](#installation)
 - [Connect a model](#connect-a-model)
@@ -12,10 +12,15 @@ For XailonCode **0.2.18** · CLI, terminal UI, and desktop app
 - [Infinia Marketplace](#infinia-marketplace)
 - [Call skills, recipes, and plugins](#call-skills-recipes-and-plugins)
 - [Answer clarifying questions](#answer-clarifying-questions)
+- [Chat apps: Slack, Teams, and Telegram](#chat-apps-slack-teams-and-telegram)
+- [Search past sessions and set reminders](#search-past-sessions-and-set-reminders)
+- [Code navigation](#code-navigation)
+- [Reuse Claude Code and Codex hooks](#reuse-claude-code-and-codex-hooks)
 - [Verification evidence](#verification-evidence)
 - [Project privacy and spending](#project-privacy-and-spending)
 - [Approvals and workspace access](#approvals-and-workspace-access)
 - [Configuration and saved sessions](#configuration-and-saved-sessions)
+- [Network proxy](#network-proxy)
 - [Updates and removal](#updates-and-removal)
 - [Troubleshooting](#troubleshooting)
 
@@ -248,7 +253,8 @@ Review edits and test results before accepting them into your project.
 
 | Key | Action |
 | --- | --- |
-| Enter | Send; queue a follow-up while the agent is working |
+| Enter | Send; while the agent is working, steer the running turn with your message |
+| Tab while the agent is working | Queue the message to send after the turn |
 | Alt+Enter, Shift+Enter, or Ctrl+J | Insert a newline; terminal support varies |
 | `/` | Browse commands |
 | `@` | Find and attach a project file |
@@ -257,7 +263,8 @@ Review edits and test results before accepting them into your project.
 | Enter in a popup | Run the command or insert the file |
 | Esc | Close a popup, or interrupt a running turn |
 | Ctrl+T | Open the transcript pager; `q` closes it |
-| Ctrl+O | Expand or collapse tool output |
+| Ctrl+O | Cycle tool output: collapsed, expanded, hidden |
+| Ctrl+L | Show or hide the todo panel |
 | PgUp / PgDn | Scroll the transcript |
 | Ctrl+V or Alt+V | Paste an image when supported |
 | Ctrl+D | Quit with empty input while idle |
@@ -268,6 +275,11 @@ Useful commands:
 | --- | --- |
 | `/help` | Commands and keyboard shortcuts |
 | `/model` | Select a model |
+| `/plan [task]` | Plan first: read-only until you approve the plan |
+| `/permission` | Choose Read only, Ask, Auto, or Full access |
+| `/mode` | Set `auto`, `approve`, `smart_approve`, or `chat` |
+| `/goal <text>` | Set a goal the agent must reach; `/goal` shows it, `/goal off` clears it |
+| `/details` | Show tool calls collapsed, expanded, or hidden, and reasoning on or off |
 | `/plugins` | Add the Infinia Marketplace, then browse and install plugins |
 | `/<name>` | Run a skill, recipe, or command by name; `@name` also calls it |
 | `/mods` | Open shared plugin Markdown panels |
@@ -280,6 +292,17 @@ Useful commands:
 | `/clear` | Clear the conversation |
 | `/exit` | Quit |
 
+While a turn runs, the status line names what the agent is doing (waiting for the
+model, thinking, responding, or running a tool) with a timer for that step and the
+total. Messages you send with Enter join the running turn, so you can correct course
+without interrupting; press Tab instead to queue a message for afterwards.
+
+The latest todo list stays pinned above the input, with done, in-progress, and
+pending items, until you send your next message. With `/plan`, the finished plan
+opens in a review dialog: scroll with PgUp/PgDn, then **Approve**, **Refine** with
+feedback, or **Stay** in plan mode. The status line also shows the active
+permission preset and any goal.
+
 Use `xailon tui --inline` to keep completed output in terminal scrollback.
 Use `xailon tui --resume` to resume the most recent session. Set
 `XAILON_DEFAULT_UI=tui` to make a bare `xailon` open the TUI in an interactive terminal.
@@ -291,6 +314,7 @@ xailon session                         # interactive line-mode interface
 xailon exec "Explain the test setup"  # one task for scripts
 xailon exec "Review this project" --sandbox read-only
 xailon session list                    # saved sessions
+xailon session search "rate limiter"   # full-text search of past sessions
 xailon --help
 ```
 
@@ -334,6 +358,23 @@ preferences. When the agent writes a task plan, it appears as a plan card with
 completion counts; only the latest plan per request stays in the conversation,
 and earlier versions remain in Activity. Failed plan updates stay visible. Use
 the arrow keys to move between tabs and Esc to close the panel.
+
+Reopening a thread shows its earlier messages, the latest 200 at first; select
+**Show earlier messages** at the top for more.
+
+To attach files, paste an image, drag files onto the message box, or select the
+paperclip. Images are sent to the model as images (the app warns when the model
+cannot read them); other files are passed by path. Each file can be up to 20 MB.
+
+When a turn changes files, a card at its end lists them with lines added and
+removed. Select a file to see that turn's diff, or **Review all** for the whole
+thread. File names in the answer that match a changed file open its diff too.
+
+**Settings → Models** lists your providers. Enter or replace an API key (it is
+stored in the keyring and never shown again), add a custom OpenAI-compatible
+endpoint and fetch its models, and choose the active provider. The model picker in
+the message bar switches the current thread's model and reasoning effort from its
+next turn.
 
 Enter sends a message; Shift+Enter adds a newline. Esc interrupts a running turn.
 On macOS, Cmd+1 opens Threads, Cmd+2 Approvals, Cmd+3 Automations, Cmd+4 Skills &
@@ -445,9 +486,76 @@ suggested answers instead of guessing.
   the message, then select **Send answers**.
 - **CLI:** answer each question in a picker; choose **Other** to type, or **Skip** to
   leave it to XailonCode.
+- **Slack, Teams, and Telegram:** the questions arrive as a numbered list with lettered
+  options. Reply with your picks, such as `1a, 2b`, or in your own words.
 
 Your answers are sent as your next message, and unanswered questions are left to
 XailonCode's judgment.
+
+## Chat apps: Slack, Teams, and Telegram
+
+A gateway connects a chat app to the agent running on your computer. Nothing is
+hosted for you, and the platform credentials stay on your machine.
+
+```bash
+export XAILON_SLACK_BOT_TOKEN=xoxb-...   # bot token
+export XAILON_SLACK_APP_TOKEN=xapp-...   # app-level token for Socket Mode
+xailon gateway start slack               # runs until Ctrl+C
+xailon gateway pair slack                # one-time code; send it to the bot in a DM
+```
+
+Telegram uses `xailon gateway start telegram --bot-token ...`; Teams uses
+`--app-id` and `--app-password` and needs an HTTPS tunnel to its local endpoint.
+Pass tokens through environment variables rather than flags, so they do not appear
+in your process list or shell history.
+
+In Slack, direct messages and @mentions reach the agent. Replies use Slack
+formatting, and tool approvals arrive as **Approve** and **Deny** buttons that only
+the person who asked can press.
+
+## Search past sessions and set reminders
+
+XailonCode keeps a full-text index of your saved sessions. Search it yourself:
+
+```bash
+xailon session search "migration plan"            # sessions from this folder
+xailon session search "oauth" --all-dirs -f json  # every folder, as JSON
+```
+
+The agent can search and read earlier sessions from the same folder on its own,
+for example when you ask "what did we decide about caching last week?".
+
+Reminders let the agent pick a conversation back up later: "check the deploy in 20
+minutes" or "every weekday at 9:00, summarize open pull requests". A reminder
+resumes the same session with its instruction as a new message. They are off by
+default: start a session with `xailon session --with-builtin reminders`, or type
+`/builtin reminders` in a line-mode session. Reminders fire only while
+`xailond` is running, a missed reminder fires once when it starts again, and
+repeating reminders must be at least a minute apart.
+
+```bash
+xailon schedule reminders                 # list reminders
+xailon schedule cancel-reminder <id>      # cancel one
+```
+
+## Code navigation
+
+When a language server is configured for your project, the agent can jump to a
+symbol's definition, find its references and implementations, and read its hover
+documentation, instead of guessing from text search. Results list file paths and
+line numbers and are capped for very common symbols. This uses the same language
+servers and trust rules as diagnostics.
+
+## Reuse Claude Code and Codex hooks
+
+Command hooks you already wrote for Claude Code or Codex run in XailonCode without
+changes. It reads `~/.claude/settings.json` and `~/.codex/hooks.json` (or the hooks
+tables in `~/.codex/config.toml`), plus the same files in a project's `.claude` and
+`.codex` folders once you trust that folder. Hooks can block a tool call or prompt,
+add context, or ask the agent to continue, as they do there.
+
+Set `XAILON_CLAUDE_CODE_HOOKS=false` or `XAILON_CODEX_HOOKS=false` to stop loading
+either source. Hook types other than commands are skipped with a warning.
 
 ## Verification evidence
 
@@ -687,6 +795,21 @@ thread list to continue previous work. Closing the app does not uninstall it or
 remove its saved configuration.
 
 Telemetry is off by default. Set `XAILON_TELEMETRY_OFF=1` to force it off.
+
+## Network proxy
+
+Behind a corporate proxy, set the usual variables before starting XailonCode:
+
+```bash
+export HTTPS_PROXY=http://proxy.example.com:8080
+export NO_PROXY=localhost,127.0.0.1,.internal.example.com
+export XAILON_CA_CERT_PATH=/path/to/corporate-ca.pem   # if the proxy inspects TLS
+```
+
+Model requests, web fetching, and HTTP hooks all follow them. Web fetching still
+refuses private and local addresses when a proxy is used; a host that cannot be
+resolved locally is refused unless `XAILON_PROXY_ALLOW_UNRESOLVED=true`. Proxy
+credentials in these variables are never written to logs.
 
 ## Updates and removal
 

@@ -1,5 +1,20 @@
 # XailonCode releases
 
+## v0.2.20 — Steer, search, and see what changed
+
+- **Terminal UI:** Enter now steers a running turn (Tab queues for afterwards); the status line names the current step with timers; `/details` and Ctrl+O switch tool output between collapsed, expanded, and hidden, with reasoning on or off; the latest todo list stays pinned above the input; `/plan` opens a plan review dialog; `/permission` presets, `/mode`, and `/goal` with the goal in the status line.
+- **Desktop:** reopened threads show their earlier messages; attach images and files by pasting, dropping, or picking; each turn ends with a card of the files it changed and their diffs; **Settings → Models** manages API keys and custom endpoints, and a model picker in the message bar switches a thread's model and effort.
+- **Search and reminders:** `xailon session search` and an agent tool search past sessions with a full-text index, scoped to the current folder by default. Optional reminders wake the same conversation later, once or on a schedule.
+- **Code navigation:** with a language server configured, the agent can go to definitions, find references and implementations, and read hover docs.
+- **Your existing hooks:** Claude Code and Codex command hooks run without changes.
+- **Corporate networks:** web fetching and HTTP hooks honour `HTTPS_PROXY`/`NO_PROXY` and a corporate CA, while still blocking private addresses.
+- **Chat apps:** clarifying questions in Slack, Teams, and Telegram arrive as numbered options instead of raw JSON, and the Slack connection no longer fails on startup.
+- **Fix:** the desktop effort setting now takes effect when switching models.
+
+### Packages and limits
+
+Apple Silicon macOS CLI/TUI/server archive and desktop DMG. Builds are ad-hoc signed, not Apple-notarized. Other platforms remain pending and are not advertised as downloadable. Use the public install/update scripts; the CLI's built-in `xailon update` still targets the source repository.
+
 ## v0.2.18 — Yolo, with a floor
 
 - **Yolo mode:** `--yolo` (or `XAILON_YOLO=1`) runs without a sandbox and without approval prompts in the CLI, terminal UI, and `exec`. Deny rules, never-allowed tools, your own plan mode, and agent tool lists still apply. A project cannot turn it on, it refuses to run as root outside a container, and `XAILON_DISABLE_YOLO` turns it off on a machine. The terminal UI shows a **⚠ YOLO** badge.
