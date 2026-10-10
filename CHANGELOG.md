@@ -1,5 +1,27 @@
 # XailonCode releases
 
+## v0.2.21 — Live mods
+
+- **Live mods:** a mod can add its own live interface to XailonCode. Mods can add:
+  - side or bottom panes with lists, tables, progress bars, sparklines and buttons
+  - a band above the prompt, a status line entry and toasts
+  - their own slash commands
+
+  A mod runs as a Node process for each session and receives session events: turns, tool calls, changed files, todos and token usage.
+- **Terminal UI:**
+  - Right panes open in a sidebar when the terminal is at least 110 columns wide, and at the bottom on narrower terminals.
+  - **Ctrl+G** moves focus through the open panes, and Esc returns to the composer.
+  - `/mods` lists mods, with `/mods open`, `close`, `restart` and `logs`.
+  - A mod's commands appear in `/` completion.
+- **Desktop app:** each thread gets its own mods, shown in right and bottom docks with bands, status chips, toasts and slash-menu commands. **Extensions → Mods** shows each mod's state and logs and can restart it.
+- **Reviewed and contained:** every pane, command, band and status entry is declared in the mod's manifest. The install review lists them under the code that runs, and anything undeclared is dropped.
+  - A crashed mod restarts up to three times a minute, and its interface is cleared.
+  - `xailon --mod-dir <folder>` loads a mod you are writing and reloads it when its files change.
+
+### Packages and limits
+
+Apple Silicon macOS CLI/TUI/server archive and desktop DMG. Builds are ad-hoc signed, not Apple-notarized. Other platforms remain pending and are not advertised as downloadable. Use the public install/update scripts; the CLI's built-in `xailon update` still targets the source repository. Live mods need Node.js 22 or later on your `PATH`.
+
 ## v0.2.20 — Steer, search, and see what changed
 
 - **Terminal UI:** Enter now steers a running turn (Tab queues for afterwards); the status line names the current step with timers; `/details` and Ctrl+O switch tool output between collapsed, expanded, and hidden, with reasoning on or off; the latest todo list stays pinned above the input; `/plan` opens a plan review dialog; `/permission` presets, `/mode`, and `/goal` with the goal in the status line.

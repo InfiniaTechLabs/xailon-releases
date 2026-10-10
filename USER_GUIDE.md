@@ -1,6 +1,6 @@
 # XailonCode user guide
 
-For XailonCode **0.2.20** · CLI, terminal UI, and desktop app
+For XailonCode **0.2.21** · CLI, terminal UI, and desktop app
 
 - [Installation](#installation)
 - [Connect a model](#connect-a-model)
@@ -9,6 +9,7 @@ For XailonCode **0.2.20** · CLI, terminal UI, and desktop app
 - [Use the desktop app](#use-the-desktop-app)
 - [Rich responses and display controls](#rich-responses-and-display-controls)
 - [MCP servers and shared Mods](#mcp-servers-and-shared-mods)
+- [Live mods](#live-mods)
 - [Infinia Marketplace](#infinia-marketplace)
 - [Call skills, recipes, and plugins](#call-skills-recipes-and-plugins)
 - [Answer clarifying questions](#answer-clarifying-questions)
@@ -265,6 +266,7 @@ Review edits and test results before accepting them into your project.
 | Ctrl+T | Open the transcript pager; `q` closes it |
 | Ctrl+O | Cycle tool output: collapsed, expanded, hidden |
 | Ctrl+L | Show or hide the todo panel |
+| Ctrl+G | Move focus through open mod panes; Esc returns to the composer |
 | PgUp / PgDn | Scroll the transcript |
 | Ctrl+V or Alt+V | Paste an image when supported |
 | Ctrl+D | Quit with empty input while idle |
@@ -428,9 +430,163 @@ inspect an update before applying its reviewed snapshot.
 
 **Extensions → Mods** displays shared Markdown panels. Use `xailon mods` in the
 CLI or `/mods` in the TUI; append `plugin/panel` to open a specific panel.
-Mods v1 supports typed lifecycle hooks and static Markdown panels. It does not
-run arbitrary UI components or directly load Claude Code TypeScript function
-modules; those modules need porting to Xailon's hook protocol.
+Static mods add typed lifecycle hooks and Markdown panels; [live mods](#live-mods)
+add an interface that updates as you work. XailonCode does not load Claude Code
+TypeScript function modules; those need porting to Xailon's protocols.
+
+## Live mods
+
+A live mod adds its own interface to XailonCode:
+
+- **Panes** with text, lists, tables, progress bars, sparklines and buttons.
+- **A band** above the prompt.
+- **A status line entry** and **toasts**.
+- **Slash commands.**
+
+It runs as a Node.js process for each session. It hears what happens in the session (prompts, turns, tool calls, changed files, todos and token totals) and redraws as it goes. Live mods need Node.js 22 or later on your `PATH`, or set `XAILON_NODE` to the `node` to use.
+
+Install a live mod like any plugin, from a marketplace or a Git URL. The install
+review lists its panes, commands, band and status entry, and shows
+`live mod: node <script>` under the code that runs. A mod runs with your
+permissions, so install only mods you trust. Each mod can show only what its manifest declares;
+anything else it sends is dropped and noted in its log.
+
+**In the terminal UI:**
+
+- Right panes open in a sidebar when the terminal is at least 110 columns wide, and
+  at the bottom when it is narrower. Bands sit above the prompt, status entries
+  appear on the status line, and toasts at the top right.
+- **Ctrl+G** moves focus through the open panes; Esc or another Ctrl+G past the last
+  pane returns to the composer. In a focused pane, a button's key presses it, Enter
+  activates the selected row, and other keys go to the mod. Clicking a button works
+  too.
+- A mod's commands appear when you type `/`. A name that clashes with another
+  command becomes `/<plugin>:<name>`.
+
+| Command | Purpose |
+| --- | --- |
+| `/mods` | List live and static mods with their state, panes and commands |
+| `/mods open <plugin>/<pane>` | Open a pane |
+| `/mods close <plugin>/<pane>` | Close a pane |
+| `/mods restart <plugin>` | Restart a mod |
+| `/mods logs <plugin>` | Show a mod's recent log lines |
+
+**In the desktop app**, each thread runs its own mods. Panes open in docks beside
+and below the conversation, status entries show as chips in the thread header, and
+mod commands appear in the composer's slash menu. **Extensions → Mods** shows each
+live mod's state, panes, commands and logs, with a restart button.
+
+If a mod crashes, its panes, band and status entry disappear. XailonCode restarts it
+after 1, 2, then 4 seconds, at most three times a minute. After that it stays
+stopped until `/mods restart`.
+
+### Write a live mod
+
+A live mod is a folder with an `xailon.mod.json` manifest and a Node script. It
+speaks newline-delimited JSON-RPC 2.0 over stdin and stdout, and writes anything
+else to stderr. While you work on it, load it without installing:
+
+```bash
+xailon --mod-dir ./hello-pane
+```
+
+XailonCode restarts the mod when a file in the folder changes. This one counts the
+session's tool calls in a right pane, with a reset button, a status entry, and a
+`/tools-reset` command.
+
+`hello-pane/xailon.mod.json`:
+
+```json
+{
+  "api_version": 2,
+  "name": "hello-pane",
+  "description": "Counts this session's tool calls",
+  "runtime": { "node": "mod.mjs" },
+  "panes": [{ "id": "tools", "title": "Tools", "placement": "right", "open": true }],
+  "commands": [{ "name": "tools-reset", "description": "Reset the tool counter" }],
+  "status": true
+}
+```
+
+`hello-pane/mod.mjs`:
+
+```js
+import { createInterface } from "node:readline";
+
+const send = (message) => process.stdout.write(JSON.stringify({ jsonrpc: "2.0", ...message }) + "\n");
+const notify = (method, params) => send({ method, params });
+let calls = 0;
+
+const draw = () => {
+  notify("ui/pane/render", {
+    id: "tools",
+    tree: {
+      type: "box",
+      children: [
+        { type: "text", spans: [{ text: `Tool calls: ${calls}`, fg: "accent", bold: true }] },
+        { type: "button", id: "reset", label: "Reset", key: "r" },
+      ],
+    },
+  });
+  notify("ui/status/set", { text: `tools ${calls}` });
+};
+
+createInterface({ input: process.stdin }).on("line", (line) => {
+  const message = JSON.parse(line);
+  if (message.method === "initialize") send({ id: message.id, result: { api_version: 2 } });
+  if (message.method === "event" && message.params.type === "tool_started") calls += 1;
+  if (message.method === "ui/action" || message.method === "command/run") calls = 0;
+  if (message.method === "command/run") send({ id: message.id, result: { markdown: "Counter reset." } });
+  if (message.method === "shutdown") process.exit(0);
+  if (["event", "ui/action", "command/run"].includes(message.method)) draw();
+});
+```
+
+The host sends `initialize` (answer with `{ "api_version": 2 }`), `event` notifications, `ui/action` (a button or list item was activated), `ui/key`, `command/run` (answer with `{ "markdown" }` or `{ "insert" }`) and `shutdown`.
+
+The mod sends these notifications:
+
+| Notification | What it does |
+| --- | --- |
+| `ui/pane/render` | Draw a pane |
+| `ui/pane/open`, `ui/pane/close` | Show or hide a declared pane |
+| `ui/band/render` | Draw the band; `tree: null` removes it |
+| `ui/status/set` | Set the status line entry |
+| `ui/toast` | Show a toast |
+| `composer/insert` | Put text in the composer; it is never sent by itself |
+| `log` | Write a line to the mod's log |
+
+A pane, band or status entry the manifest does not declare is dropped.
+
+The `event` types are:
+- `session_start` and `session_end`
+- `prompt_submitted`
+- `turn_started`, `turn_completed` and `turn_failed`
+- `tool_started` and `tool_completed`
+- `file_changed`
+- `todos_updated`
+- `usage`: running session totals, not the current context size
+- `model_changed`
+- `approval_requested`
+- `pane_visibility`
+
+A tree is made of `box` (rows or columns with `gap`, `padding`, `border`, `title`, `grow`, `width` and `height`), `text` (styled `spans`), `markdown`, `list`, `table`, `progress`, `sparkline`, `button`, `divider` and `spacer` nodes.
+
+Colors can be:
+- theme colors: `accent`, `muted`, `success`, `warning`, `error`, `info`
+- standard names such as `red`
+- `#rrggbb` hex values
+
+Limits:
+
+| Limit | Maximum |
+| --- | --- |
+| Panes per mod | 8 |
+| Commands per mod | 16 |
+| Tree depth | 16 levels |
+| Nodes per tree | 2,000 |
+| Text per tree | 64 KiB |
+| Message size | 1 MiB |
 
 ## Infinia Marketplace
 

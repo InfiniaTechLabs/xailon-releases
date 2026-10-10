@@ -20,11 +20,11 @@ This is the public distribution repository. It contains documentation, installat
 helpers, checksums, and release metadata. Application binaries are attached to
 GitHub Releases rather than stored in Git history.
 
-## Latest: v0.2.20
+## Latest: v0.2.21
 
-Steer the agent mid-turn, search past sessions, see each turn's changed files, and
-attach images in the desktop app. Your Claude Code and Codex hooks now run as-is. See
-[what changed](CHANGELOG.md) and the [user guide](USER_GUIDE.md).
+Live mods add their own panes, a band above the prompt, status entries, toasts, and
+slash commands to the terminal UI and the desktop app. See
+[what changed](CHANGELOG.md) and the [user guide](USER_GUIDE.md#live-mods).
 
 **Available:** Apple Silicon macOS CLI, TUI, server, and desktop. Windows, Linux,
 and Intel Mac packages are pending. macOS packages are ad-hoc signed and not
